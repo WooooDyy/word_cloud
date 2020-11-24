@@ -30,7 +30,10 @@ export default {
     // 实现轮询
     window.setInterval(() => {
       setTimeout(this.showDetails(), 0);
-    }, 300);
+    }, 3000);
+    window.setInterval(() => {
+      setTimeout(this.getLineChartDatas(), 0);
+    }, 3000);
   },
   methods: {
     wordClickHandler(name, value, vm) {
@@ -41,20 +44,20 @@ export default {
       console.log("请求" + this.num++ + "次");
     },
     showDetails: function () {
-      //安装插件
+      // 安装插件
       // 填充url
-      //禁用eslint
-      // this.$http.get('http://172.31.2.77:5050/getApi').then(function (res) {
-      //
-      //   this.msg = res.body;
-      //   var bodyTXT = res.bodyText;
-      //   var reg = new RegExp("\'", "g");
-      //   bodyTXT = bodyTXT.replace(reg, "\"");
-      //   // console.log("bodytxt")
-      //   // console.log(bodyTXT)
-      //   var dataword = JSON.parse(bodyTXT)
-      //   this.defaultWords = dataword;
-      // });
+      // 禁用eslint
+      this.$http.get('http://172.31.2.77:5050/getApi').then(function (res) {
+
+        this.msg = res.body;
+        var bodyTXT = res.bodyText;
+        var reg = new RegExp("\'", "g");
+        bodyTXT = bodyTXT.replace(reg, "\"");
+        // console.log("bodytxt")
+        // console.log(bodyTXT)
+        var dataword = JSON.parse(bodyTXT)
+        this.defaultWords = dataword;
+      });
     },
 
     getLineChartDatas(){
@@ -73,9 +76,77 @@ export default {
         var data2 = d2.substr(1,d2.length-2).split(",").map(Number)
         var data3 = d3.substr(1,d3.length-2).split(",").map(Number)
 
-        this.defaultxAxyisData = d1;
-        this.defaultDataOfLine1 = d2;
-        this.defaultDataOfLine2 = d3;
+        this.defaultxAxyisData = data1;
+        this.defaultDataOfLine1 = data2;
+        this.defaultDataOfLine2 = data3;
+
+        console.log(d1);
+        console.log(d2);
+        console.log(d3);
+
+        var option = {
+          tooltip: {              //设置tip提示
+            trigger: 'axis'
+          },
+
+          legend: {               //设置区分（哪条线属于什么）
+            data:['平均成绩','学生成绩']
+          },
+          color: ['#8AE09F', '#1f77b4'],       //设置区分（每条线是什么颜色，和 legend 一一对应）
+          xAxis: {                //设置x轴
+            type: 'category',
+            boundaryGap: false,     //坐标轴两边不留白
+            data: this.defaultxAxyisData,
+            name: 'DATE',           //X轴 name
+            nameTextStyle: {        //坐标轴名称的文字样式
+              color: '#696969',
+              fontSize: 16,
+              padding: [0, 0, 0, 20]
+            },
+            axisLine: {             //坐标轴轴线相关设置。
+              lineStyle: {
+                color: '#696969',
+              }
+            }
+          },
+          yAxis: {
+            name: 'SALES VOLUME',
+            nameTextStyle: {
+              color: '#696969',
+              fontSize: 16,
+              padding: [0, 0, 10, 0]
+            },
+            axisLine: {
+              lineStyle: {
+                color: '#696969',
+              }
+            },
+            type: 'value'
+          },
+          series: [
+            {
+              name: '平均成绩',
+              data:  this.defaultDataOfLine1,
+              type: 'line',               // 类型为折线图
+              lineStyle: {                // 线条样式 => 必须使用normal属性
+                normal: {
+                  color: '#8AE09F',
+                }
+              },
+            },
+            {
+              name: '学生成绩',
+              data: this.defaultDataOfLine2,
+              type: 'line',
+              lineStyle: {
+                normal: {
+                  color: '#1f77b4',
+                }
+              },
+            }
+          ]
+        };
+        this.chartLine.setOption(option);
 
 
       });
